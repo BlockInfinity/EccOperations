@@ -7,7 +7,7 @@ contract EccOperations {
 	uint256 constant a = 0x7D5A0975FC2C3057EEF67530417AFFE7FB8055C126DC5C6CE94A4B44F330B5D9;
 	uint256 constant b = 0x26DC5C6CE94A4B44F330B5D9BBD77CBF958416295CF7E1CE6BCCDC18FF8C07B6;
 
-	function inverse(uint256 num) public pure returns(uint256 inverseNumber) {
+	function inverseModP(uint256 num) public pure returns(uint256 inverseNumber) {
 		uint256 t = 0;
 		uint256 newT = 1;
 		uint256 r = p;
@@ -16,7 +16,23 @@ contract EccOperations {
 		while (newR != 0) {
 			q = r / newR;
 
-			(t, newT) = (newT, addmod(t, (p - mulmod(q, newT,p)), p));
+			(t, newT) = (newT, addmod(t, (p - mulmod(q, newT, p)), p));
+			(r, newR) = (newR, r - q * newR );
+		}
+
+		return t;
+	}
+
+	function inverseModN(uint256 num) public pure returns(uint256 inverseNumber) {
+		uint256 t = 0;
+		uint256 newT = 1;
+		uint256 r = n;
+		uint256 newR = num;
+		uint256 q;
+		while (newR != 0) {
+			q = r / newR;
+
+			(t, newT) = (newT, addmod(t, (n - mulmod(q, newT, n)), n));
 			(r, newR) = (newR, r - q * newR );
 		}
 
@@ -50,7 +66,7 @@ contract EccOperations {
 			u = x_p + p - x_q;
 		}
 
-		uint256 s = mulmod(o, inverse(u), p);
+		uint256 s = mulmod(o, inverseModP(u), p);
 
 		uint256 x = mulmod(s, s, p);
 		if(x >= x_p) {
@@ -70,7 +86,7 @@ contract EccOperations {
 		} else {
 			i = x_p + p - x;
 		}
-		
+
 		uint256 y = mulmod(s, i, p);
 		if(y >= y_p) {
 			y -= y_p;
@@ -86,7 +102,7 @@ contract EccOperations {
 			return getNeutral();
 		}
 		
-		uint256 twoYInv = inverse(mulmod(2, y0, p));
+		uint256 twoYInv = inverseModP(mulmod(2, y0, p));
 		uint256 s = mulmod(addmod(mulmod(3, mulmod(x0, x0, p), p), a, p), twoYInv, p);
 		uint256 x1L = mulmod(s, s, p);
 		uint256 x1R = mulmod(2, x0, p);
@@ -114,9 +130,7 @@ contract EccOperations {
 		return (x1, y1);
 	}
 
-	uint256 resultX;
-	uint256 resultY;
-	function multiplyScalar(uint256 x0, uint256 y0, uint scalar) public returns(uint256 x1, uint256 y1) {
+	function multiplyScalar(uint256 x0, uint256 y0, uint scalar) public pure returns(uint256 x1, uint256 y1) {
 		uint256 P_x = x0;
 		uint256 P_y = y0;
 		(uint256 Q_x, uint256 Q_y) = getNeutral();
@@ -128,21 +142,11 @@ contract EccOperations {
 				(Q_x, Q_y) = add(P_x, P_y, Q_x, Q_y);
 			}
 
-		if(i == 0) {
-		  break;
+			if(i == 0) {
+				break;
+			}
 		}
-	}
 
-	resultX = Q_x;
-	resultY = Q_y;
-	return (Q_x, Q_y);
-	}
-
-	function getResX() public view returns (uint256) {
-	  return resultX;
-	}
-
-	function getResY() public view returns (uint256) {
-	  return resultY;
+		return (Q_x, Q_y);
 	}
 }
