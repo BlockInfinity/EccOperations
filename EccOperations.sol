@@ -1,5 +1,11 @@
 pragma solidity ^0.5.0;
 
+/*
+License: GPL-3.0
+Author: Christoph Michelbach
+Contact: christoph.michelbach@blockinfinity.com
+*/
+
 contract EccOperations {
 	// Curve parameters of brainpoolP256r1.
 	uint256 constant p = 0xA9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377;
