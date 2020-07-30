@@ -6,7 +6,7 @@ Author: Christoph Michelbach
 Contact: christoph.michelbach@blockinfinity.com
 */
 
-contract EccOperations {
+library EccOperations {
 	// Curve parameters of brainpoolP256r1.
 	uint256 constant p = 0xA9FB57DBA1EEA9BC3E660A909D838D726E3BF623D52620282013481D1F6E5377;
 	uint256 constant n = 0xA9FB57DBA1EEA9BC3E660A909D838D718C397AA3B561A6F7901E0E82974856A7;
