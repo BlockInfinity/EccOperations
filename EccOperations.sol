@@ -155,4 +155,29 @@ library EccOperations {
 
 		return (Q_x, Q_y);
 	}
+
+	function multiplyScalar(uint256 x0, uint256 y0, uint scalar, uint8 subpart, uint256 Q_x, uint256 Q_y) public pure returns(uint256 x1, uint256 y1) {
+		uint256 P_x = x0;
+		uint256 P_y = y0;
+
+        int i;
+        int last;
+        if(subpart == 0) {
+            i = 255;
+            last = 128;
+        }
+        if(subpart == 1) {
+            i = 127;
+            last = 0;
+        }
+		for(; i >= last; i--) {
+			(Q_x, Q_y) = double(Q_x, Q_y);
+			
+			if((scalar & (1 << uint256(i))) > 0) {
+				(Q_x, Q_y) = add(P_x, P_y, Q_x, Q_y);
+			}
+		}
+
+		return (Q_x, Q_y);
+	}
 }
